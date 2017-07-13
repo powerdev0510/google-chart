@@ -1,0 +1,284 @@
+<html>
+
+<head>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+    <script>
+        var chartData = generateChartData();
+
+        // conversion of date format - ('MM/DD/YYYY hh:mm:ss')
+        function getFormatDate(date) {
+            return ("0" + (date.getMonth() + 1)).slice(-2) + '/' +
+                ("0" + date.getDate()).slice(-2) + '/' +
+                (date.getFullYear()) + ' ' +
+                ("0" + date.getHours()).slice(-2) + ':' +
+                ("0" + date.getMinutes()).slice(-2) + ':' +
+                ("0" + date.getSeconds()).slice(-2);
+        }
+        var chart = AmCharts.makeChart("chartdiv", {
+            "type": "serial",
+            "theme": "light",
+            "legend": {
+                "useGraphSettings": true
+            },
+            "rotate": false,
+            "dataProvider": chartData,
+            "synchronizeGrid": true,
+            "valueAxes": [{
+                "id": "v1",
+                "axisColor": "#FF6600",
+                "axisThickness": 1,
+                "axisAlpha": 1,
+                "position": "left"
+            }],
+            "graphs": [{
+                "valueAxis": "v1",
+                "lineColor": "#FF6600",
+                "bullet": "round",
+                "bulletBorderThickness": 1,
+                "balloonText": "[[value]]<br>[[text]]",
+                "hideBulletsCount": 30,
+                "title": "Variable",
+                "valueField": "visits",
+                "legendValueText": "text",
+                "fillAlphas": 0
+            }, {
+                "valueAxis": "v3",
+                "lineColor": "#B0DE09",
+                "bullet": "triangleUp",
+                "balloonText": "[[value]]",
+                "bulletBorderThickness": 1,
+                "hideBulletsCount": 30,
+                "title": "Constant",
+                "valueField": "views",
+                "fillAlphas": 0
+            }],
+            "chartScrollbar": {},
+            "chartCursor": {
+                "cursorPosition": "mouse",
+                "pan": true,
+                "valueLineEnabled": true,
+                "valueLineBalloonEnabled": true,
+
+                "cursorAlpha": 0.2,
+                // "cursorColor": "#258cbb",
+                "valueLineAlpha": 0.2,
+                "valueZoomable": true
+            },
+            "categoryField": "date",
+            "categoryAxis": {
+                "labelRotation": 45,
+                "gridPosition": "start",
+                "axisColor": "#DADADA",
+                "minorGridEnabled": true
+            },
+            "export": {
+                "enabled": true,
+                "position": "bottom-right"
+            }
+        });
+        // chart.dataDateFormat = "YYYY-MM-DD";
+        //chart.dataDateFormat = "YYYY-MM-DD, JJ:NN:SS";
+        chart.addListener("dataUpdated", zoomChart);
+
+
+        zoomChart();
+
+
+        function formatDate(date) {
+            var monthNames = [
+                "January", "February", "March",
+                "April", "May", "June", "July",
+                "August", "September", "October",
+                "November", "December"
+            ];
+
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+            var hour = date.getHours();
+            var min = date.getMinutes();
+            var sec = date.getSeconds();
+            if (hour < 10)
+                hour = '0' + hour;
+            if (min < 10)
+                min = '0' + min;
+            if (sec < 10)
+                sec = '0' + sec;
+            return day + ' ' + monthNames[monthIndex] + ' ' + year + ' ' + hour + ":" + min + ":" + sec;
+        }
+
+        // generate some random data, quite different range
+        function generateChartData() {
+            var chartData = [];
+            // var firstDate = new Date();
+            // firstDate.setDate(firstDate.getDate() - 100);
+            var arr = [{
+                date: "2017-06-13 10:13:32",
+                value: "140",
+                text: "Here is A"
+            }, {
+                date: "2017-06-13 09:11:52",
+                value: "134",
+                text: "Here is B"
+            }, {
+                date: "2017-06-13 08:13:13",
+                value: "135",
+                text: "Here is C"
+            }, {
+                date: "2017-06-13 07:08:29",
+                value: "142",
+                text: "Here is D"
+            }, {
+                date: "2017-06-13 06:06:49",
+                value: "156",
+                text: "Here is E"
+            }, {
+                date: "2017-06-12 21:06:49",
+                value: "143",
+                text: "Here is F"
+            }, {
+                date: "2017-06-12 14:06:49",
+                value: "153",
+                text: "Here is G"
+            }, {
+                date: "2017-06-12 08:06:49",
+                value: "139",
+                text: "Here is H"
+            }, {
+                date: "2017-06-11 23:06:49",
+                value: "135",
+                text: "Here is I"
+            }, {
+                date: "2017-06-11 21:06:49",
+                value: "133",
+                text: "Here is J"
+            }];
+            var i;
+            var j;
+            var n = arr.length;
+            for (i = 0; i < n; i++) {
+                for (j = i + 1; j < n; j++) {
+                    if (arr[i].date > arr[j].date) {
+                        var td = arr[i].date;
+                        arr[i].date = arr[j].date;
+                        arr[j].date = td;
+                        td = arr[i].value;
+                        arr[i].value = arr[j].value;
+                        arr[j].value = td;
+                    }
+                }
+            }
+            for (var i = 0; i < n; i++) {
+                // we create date objects here. In your data, you can have date strings
+                // and then set format of your dates using chart.dataDateFormat property,
+                // however when possible, use date objects, as this will speed up chart rendering.
+                // var newDate = new Date(firstDate);
+                // newDate.setDate(newDate.getDate() + i);
+                //console.log(arr[i].date);
+                let dateString = arr[i].date,
+                    reggie = /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/,
+                    [, year, month, day, hours, minutes, seconds] = reggie.exec(dateString),
+                    newDate = (new Date(year, month - 1, day, hours, minutes, seconds));
+                // console.log(formatDate(new Date()));
+                // console.log(newDate);
+                //console.log(arr[i].date + "/" + arr[i].value);
+                var value = arr[i].value;
+                var contrast = 150;
+
+                chartData.push({
+                    date: formatDate(newDate),
+                    visits: value,
+                    text: arr[i].text,
+                    views: contrast
+                });
+            }
+            return chartData;
+        }
+
+        function zoomChart() {
+            chart.zoomToIndexes(chart.dataProvider.length - 20, chart.dataProvider.length - 1);
+        }
+
+        function change_var() {
+            var obj = document.getElementById('variable');
+            console.log(obj.value);
+            // graph = new AmCharts.AmSerialChart();
+            chart.graphs[0].lineColor = obj.value;
+            chart.validateData();
+        }
+
+        function change_con() {
+            var obj = document.getElementById('contrast');
+            console.log(obj.value);
+            // graph = new AmCharts.AmSerialChart();
+            chart.graphs[1].lineColor = obj.value;
+            chart.validateData();
+        }
+
+        /*function change_txt_var() {
+            var obj = document.getElementById('variable_text');
+            console.log(obj.value);
+            // graph = new AmCharts.AmSerialChart();
+            chart.graphs[0].balloonText = obj.value + ":[[value]]";
+            chart.validateData();
+        }
+
+        function change_txt_con() {
+            var obj = document.getElementById('contrast_text');
+            console.log(obj.value);
+            // graph = new AmCharts.AmSerialChart();
+            chart.graphs[1].balloonText = obj.value + ":[[value]]";
+            chart.validateData();
+        }*/
+
+        /**
+         * Changes graph's color by graph index
+         */
+    </script>
+
+    <style>
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+            font-size: 11px;
+        }
+        
+        .sp-replacer {
+            position: absolute;
+            top: 50px;
+            right: 40px;
+            z-index: 100;
+        }
+        
+        .amcharts-export-menu.amcharts-export-menu-top-right.amExportButton {
+            display: none;
+        }
+        
+        .amcharts-chart-div>a {
+            display: none !important;
+        }
+    </style>
+
+</head>
+
+<body>
+    Variable Color:<input type="color" id="variable" value="#FF6600" onchange="change_var()" /> Contrast Color:<input type="color" value="#B0DE09" id="contrast" onchange="change_con()" /> <br><br><br>
+    <!--Variable Text:<input type="text" id="variable_text"
+        value="Variable" onchange="change_txt_var()" /> Contrast Text:<input type="text" value="Contrast" id="contrast_text" onchange="change_txt_con()" />-->
+    <div id="chartdiv"></div>
+
+    <!--Variable Color: <input id="variable" class="jscolor" value="ab2567" /> Contrast Color: <input id="contrast" class="jscolor" value="ab2567" />-->
+
+</body>
+
+
+</html>
